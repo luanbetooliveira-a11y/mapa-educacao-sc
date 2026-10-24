@@ -4,13 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0F2233">
-<title>Teleprompter — Vídeo 2 · Escola em Questão</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Teleprompter · Escola em Questão</title>
 <style>
-  :root{
-    --fundo:#0F2233; --card:#17303F; --alto:#22404F; --raiz:#193F55;
-    --branco:#FFFFFF; --apoio:#C9CFD2; --credito:#8A959C;
-    --brasil:#6FB6E8; --melhora:#3DBE7A; --neutro:#F2C14E;
-  }
+  :root{--fundo:#0F2233;--card:#17303F;--alto:#22404F;--raiz:#193F55;
+    --branco:#FFFFFF;--apoio:#C9CFD2;--credito:#8A959C;
+    --brasil:#6FB6E8;--melhora:#3DBE7A;--neutro:#F2C14E;--piora:#FF8A73;}
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{background:var(--fundo);color:var(--branco);
     font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;}
@@ -19,16 +18,22 @@
   header{position:sticky;top:0;z-index:10;background:rgba(15,34,51,.96);
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
     border-bottom:1px solid var(--alto);padding:14px 20px 12px;}
-  .topo{display:flex;align-items:center;justify-content:space-between;gap:12px;}
   .marca{font-size:13px;font-weight:600;color:var(--credito);letter-spacing:.5px;}
   .titulo{font-size:17px;font-weight:700;margin-top:2px;}
   .meta{font-size:12px;color:var(--credito);margin-top:3px;}
 
-  .acoes{display:flex;gap:10px;margin-top:14px;}
-  button{flex:1;border:0;border-radius:12px;padding:15px 12px;
+  .abas{display:flex;gap:8px;margin-top:14px;}
+  .aba{flex:1;background:var(--alto);border:0;border-radius:10px;padding:12px 8px;
+    font-size:13px;font-weight:700;font-family:inherit;color:var(--apoio);
+    cursor:pointer;line-height:1.3;transition:transform .08s ease;}
+  .aba:active{transform:scale(.97);}
+  .aba.on{background:var(--brasil);color:#0F2233;}
+
+  .acoes{display:flex;gap:10px;margin-top:10px;}
+  .acoes button{flex:1;border:0;border-radius:12px;padding:15px 12px;
     font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;
-    transition:transform .08s ease,opacity .15s ease;}
-  button:active{transform:scale(.97);}
+    transition:transform .08s ease;}
+  .acoes button:active{transform:scale(.97);}
   .principal{background:var(--brasil);color:#0F2233;}
   .secundario{background:var(--alto);color:var(--branco);}
   .ok{background:var(--melhora)!important;color:#0F2233!important;}
@@ -43,7 +48,10 @@
   .fala{font-size:19px;line-height:1.65;color:var(--branco);white-space:pre-line;}
   .pausa{display:inline-block;background:rgba(242,193,78,.14);color:var(--neutro);
     border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;
-    letter-spacing:.8px;margin:14px 0 6px;}
+    letter-spacing:.8px;margin:14px 0 6px;line-height:1.4;}
+  .aviso-lei{background:rgba(111,182,232,.12);color:var(--brasil);border-radius:6px;
+    padding:5px 12px;font-size:12px;font-weight:700;margin:12px 0 4px;
+    display:inline-block;line-height:1.4;}
 
   .dica{background:var(--raiz);border-radius:14px;padding:20px 18px;margin:26px 0 0;}
   .dica h3{font-size:14px;margin-bottom:12px;}
@@ -54,22 +62,26 @@
     background:rgba(15,34,51,.96);backdrop-filter:blur(12px);
     -webkit-backdrop-filter:blur(12px);border-top:1px solid var(--alto);
     padding:12px 20px calc(12px + env(safe-area-inset-bottom));}
-  .aviso{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);
+  .barra button{width:100%;border:0;border-radius:12px;padding:15px;
+    font-size:15px;font-weight:700;font-family:inherit;background:var(--alto);
+    color:var(--branco);cursor:pointer;}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);
     background:var(--melhora);color:#0F2233;font-size:14px;font-weight:700;
     padding:12px 22px;border-radius:30px;opacity:0;pointer-events:none;
     transition:all .25s ease;z-index:20;white-space:nowrap;}
-  .aviso.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+  .oculto{display:none;}
 </style>
 </head>
 <body>
 
 <header>
-  <div class="topo">
-    <div>
-      <div class="marca">@luanoliveira.educacao</div>
-      <div class="titulo">O dia de aula brasileiro tem 4 horas</div>
-      <div class="meta">427 palavras · cerca de 1min30</div>
-    </div>
+  <div class="marca">@luanoliveira.educacao · uso interno</div>
+  <div class="titulo" id="titulo">Teleprompter</div>
+  <div class="meta" id="meta"></div>
+  <div class="abas">
+    <button class="aba" id="abaA">O professor brasileiro<br>ensina mais que a lei</button>
+    <button class="aba" id="abaB">200 dias, 4 horas<br>o dia escolar</button>
   </div>
   <div class="acoes">
     <button class="secundario" id="btnCopiar">Copiar tudo</button>
@@ -77,326 +89,208 @@
   </div>
 </header>
 
-<main id="conteudo">
-  <div class="bloco">
-    <h2>Bloco 1 · Gancho</h2>
-    <div class="tempo">0–7 SEGUNDOS</div>
-    <div class="fala">O Brasil tem mais dias de aula
-que os Estados Unidos, que Portugal e que a Grécia.
-
-E mesmo assim o aluno brasileiro
-recebe menos horas de aula que quase todo o mundo.
-
-Tem uma razão.
-E não é a que você tá pensando.</div>
-  </div>
-
-  <div class="bloco">
-    <h2>Bloco 2 · Os dias</h2>
-    <div class="tempo">7–18 SEGUNDOS</div>
-    <div class="fala">Olha os dias letivos por ano.
-
-Israel: duzentos e catorze.
-Japão: duzentos e dois.
-Brasil: duzentos.
-
-A gente tá no topo do mundo.
-A lei brasileira exige duzentos dias —
-e a gente cumpre.</div>
-  </div>
-
-  <div class="bloco">
-    <h2>Bloco 3 · A virada</h2>
-    <div class="tempo">18–32 SEGUNDOS</div>
-    <div class="fala">Só que o dia de aula brasileiro tem quatro horas.
-
-Quatro.
-
-A mediana dos países é cinco vírgula dois.
-
-A gente faz mais dias
-e menos horas por dia.
-
-O calendário brasileiro é largo e raso.</div>
-    <div class="pausa">⟲ PAUSA LONGA DEPOIS DE "QUATRO"</div>
-  </div>
-
-  <div class="bloco">
-    <h2>Bloco 4 · A anomalia</h2>
-    <div class="tempo">32–52 SEGUNDOS</div>
-    <div class="fala">E tem uma coisa que ninguém discute.
-
-A lei brasileira exige oitocentas horas
-para o ensino fundamental.
-Do primeiro ao nono ano.
-
-O mesmo para os nove anos.
-
-Todo outro país aumenta a carga
-quando o aluno passa para os anos finais.
-
-A mediana mundial sai de setecentas e oitenta e oito
-pra novecentas e setenta e duas horas.
-
-O Brasil fica parado em oitocentas.
-
-Resultado: nos anos finais,
-o Brasil cai para a quinquagésima primeira posição
-entre cinquenta e oito países.
-
-Cento e setenta e duas horas por ano a menos.
-Dezoito por cento menos aula.
-
-Exatamente na fase
-em que o conteúdo começa a se acumular.</div>
-    <div class="pausa">⟲ PAUSA DE 3 SEGUNDOS — O GRÁFICO PRECISA APARECER SOZINHO</div>
-  </div>
-
-  <div class="bloco">
-    <h2>Bloco 5 · Por que importa</h2>
-    <div class="tempo">52–68 SEGUNDOS</div>
-    <div class="fala">Repara no que isso não é.
-
-Não é falta de dia letivo.
-A gente tem mais que a maioria.
-
-Não é o professor.
-Não é o aluno.
-Não é dinheiro.
-
-É o desenho do dia.
-
-A escola já tá aberta.
-O prédio tá lá.
-O professor tá lá.
-
-O dia é que acaba cedo.</div>
-  </div>
-
-  <div class="bloco">
-    <h2>Bloco 6 · A saída</h2>
-    <div class="tempo">68–80 SEGUNDOS</div>
-    <div class="fala">Isso não é uma fatalidade.
-É uma escolha que ninguém revisou desde mil novecentos e noventa e seis.
-
-Não precisa construir escola nova.
-Não precisa contratar mais ninguém.
-
-Precisa decidir
-que quatro horas não é dia de aula.</div>
-  </div>
-
-  <div class="bloco">
-    <h2>Bloco 7 · Chamada</h2>
-    <div class="tempo">80–90 SEGUNDOS</div>
-    <div class="fala">Eu mapeei isso
-e mais quinhentos e vinte pontos
-da educação pública de Santa Catarina —
-cada um com a fonte oficial.
-
-O link tá na descrição
-e no primeiro comentário.
-
-E se você é professor ou pai,
-me diz nos comentários:
-
-quantas horas tem o dia de aula
-na sua escola?</div>
-  </div>
-
-  <div class="dica">
-    <h3>Como ler</h3>
-    <ul>
-      <li><b>Os números estão por extenso de propósito.</b> "Duzentos e catorze"
-      sai da boca melhor que "214". O olho lê o algarismo e a boca trava.</li>
-      <li><b>Onde você pausa, o vídeo respira.</b> As pausas marcadas são onde o
-      card entra na tela. Se você emendar tudo, o dado não tem onde aparecer.</li>
-      <li><b>Não decore. Leia.</b> O teleprompter existe para isso.</li>
-    </ul>
-  </div>
-</main>
+<main id="conteudo"></main>
 
 <div class="barra">
-  <button class="secundario" id="btnTexto">Ver como texto puro</button>
+  <button id="btnTexto">Ver como texto puro</button>
 </div>
-
-<div class="aviso" id="aviso">Copiado</div>
+<div class="toast" id="toast">Copiado</div>
 
 <script>
-var texto = [
-"=== BLOCO 1 - GANCHO (0-7s) ===",
-"",
-"O Brasil tem mais dias de aula",
-"que os Estados Unidos, que Portugal e que a Grecia.",
-"",
-"E mesmo assim o aluno brasileiro",
-"recebe menos horas de aula que quase todo o mundo.",
-"",
-"Tem uma razao.",
-"E nao e a que voce ta pensando.",
-"",
-"",
-"=== BLOCO 2 - OS DIAS (7-18s) ===",
-"",
-"Olha os dias letivos por ano.",
-"",
-"Israel: duzentos e catorze.",
-"Japao: duzentos e dois.",
-"Brasil: duzentos.",
-"",
-"A gente ta no topo do mundo.",
-"A lei brasileira exige duzentos dias -",
-"e a gente cumpre.",
-"",
-"",
-"=== BLOCO 3 - A VIRADA (18-32s) ===",
-"",
-"So que o dia de aula brasileiro tem quatro horas.",
-"",
-"Quatro.",
-"",
-"[PAUSA]",
-"",
-"A mediana dos paises e cinco virgula dois.",
-"",
-"A gente faz mais dias",
-"e menos horas por dia.",
-"",
-"O calendario brasileiro e largo e raso.",
-"",
-"",
-"=== BLOCO 4 - A ANOMALIA (32-52s) ===",
-"",
-"E tem uma coisa que ninguem discute.",
-"",
-"A lei brasileira exige oitocentas horas",
-"para o ensino fundamental.",
-"Do primeiro ao nono ano.",
-"",
-"O mesmo para os nove anos.",
-"",
-"Todo outro pais aumenta a carga",
-"quando o aluno passa para os anos finais.",
-"",
-"A mediana mundial sai de setecentas e oitenta e oito",
-"pra novecentas e setenta e duas horas.",
-"",
-"O Brasil fica parado em oitocentas.",
-"",
-"[PAUSA LONGA - 3 SEGUNDOS]",
-"",
-"Resultado: nos anos finais,",
-"o Brasil cai para a quinquagesima primeira posicao",
-"entre cinquenta e oito paises.",
-"",
-"Cento e setenta e duas horas por ano a menos.",
-"Dezoito por cento menos aula.",
-"",
-"Exatamente na fase",
-"em que o conteudo comeca a se acumular.",
-"",
-"",
-"=== BLOCO 5 - POR QUE IMPORTA (52-68s) ===",
-"",
-"Repara no que isso nao e.",
-"",
-"Nao e falta de dia letivo.",
-"A gente tem mais que a maioria.",
-"",
-"Nao e o professor.",
-"Nao e o aluno.",
-"Nao e dinheiro.",
-"",
-"E o desenho do dia.",
-"",
-"A escola ja ta aberta.",
-"O predio ta la.",
-"O professor ta la.",
-"",
-"O dia e que acaba cedo.",
-"",
-"",
-"=== BLOCO 6 - A SAIDA (68-80s) ===",
-"",
-"Isso nao e uma fatalidade.",
-"E uma escolha que ninguem revisou desde mil novecentos e noventa e seis.",
-"",
-"Nao precisa construir escola nova.",
-"Nao precisa contratar mais ninguem.",
-"",
-"Precisa decidir",
-"que quatro horas nao e dia de aula.",
-"",
-"",
-"=== BLOCO 7 - CHAMADA (80-90s) ===",
-"",
-"Eu mapeei isso",
-"e mais quinhentos e vinte pontos",
-"da educacao publica de Santa Catarina -",
-"cada um com a fonte oficial.",
-"",
-"O link ta na descricao",
-"e no primeiro comentario.",
-"",
-"[PAUSA]",
-"",
-"E se voce e professor ou pai,",
-"me diz nos comentarios:",
-"",
-"quantas horas tem o dia de aula",
-"na sua escola?"
-].join("\n");
+/* ------------------------------------------------------------------
+   Dois roteiros no mesmo endereco. O VIDEO 3 vem primeiro: e o que
+   esta sendo gravado agora. O VIDEO 2 fica na segunda aba.
+   Endereco curto de proposito: /teleprompter/ e mais facil de ditar.
+------------------------------------------------------------------ */
 
-function avisar(msg){
-  var a=document.getElementById("aviso");
-  a.textContent=msg; a.classList.add("on");
-  setTimeout(function(){a.classList.remove("on");},1800);
+var ROTEIROS = {};
+
+ROTEIROS.lei = {
+  titulo: "O professor brasileiro ensina mais do que a lei permite",
+  meta: "VÍDEO 3 · cerca de 1min35",
+  blocos: [
+    { h:"Bloco 1 · Gancho", t:"0–8 SEGUNDOS",
+      f:"O professor brasileiro dá mais aula que o japonês.\n\nO japonês trabalha cinquenta e três horas por semana e dá dezessete.\n\nO brasileiro trabalha trinta e duas —\ne dá vinte e três." },
+    { h:"Bloco 2 · A revelação", t:"8–20 SEGUNDOS",
+      f:"O professor brasileiro passa setenta e três por cento\ndo tempo de trabalho dentro da sala de aula.\n\nA lei brasileira diz que ele não pode passar de dois terços.\n\nDois terços é sessenta e seis vírgula sete.",
+      pausa:"⟲ PAUSA — DEIXE OS DOIS NÚMEROS NA TELA" },
+    { h:"Bloco 3 · A lei", t:"20–32 SEGUNDOS",
+      f:"Não é opinião minha.\n\nÉ a Lei onze mil setecentos e trinta e oito, de dois mil e oito,\nartigo segundo, parágrafo quarto.\n\nNo máximo dois terços da carga horária em interação com os alunos.\n\nOu seja: no mínimo um terço\né para planejar, corrigir e se formar.",
+      lei:"LEI 11.738/2008 · VIGENTE APÓS A LEI 15.437/2026" },
+    { h:"Bloco 4 · O que sobra", t:"32–50 SEGUNDOS",
+      f:"Então sobra um terço.\nQuanto é um terço, na prática?\n\nO professor brasileiro tem oito vírgula sete horas por semana\npara planejar, corrigir e estudar.\n\nO japonês tem trinta e cinco vírgula seis.\n\nQuatro vezes mais.",
+      pausa:"⟲ PAUSA DE 3 SEGUNDOS — O GRÁFICO PRECISA APARECER SOZINHO" },
+    { h:"Bloco 5 · Virando a mesa", t:"50–68 SEGUNDOS",
+      f:"Repara no que isso não é.\n\nNão é o professor trabalhando pouco.\nEle tem uma das menores cargas totais\nentre cinquenta e seis sistemas comparados —\ne a maior parte dela em sala.\n\nNão é falta de esforço.\nÉ falta de tempo fora da sala.\n\nO professor brasileiro não está na sala dos professores.\nEle está na sala de aula." },
+    { h:"Bloco 6 · A pergunta", t:"68–82 SEGUNDOS",
+      f:"E aí vem a pergunta que ninguém faz.\n\nSe o professor não tem tempo de planejar,\nquem planeja a aula que o aluno recebe?\n\nA resposta é: ninguém.\nOu ele, de madrugada, de graça.",
+      pausa:'⟲ PAUSA ANTES DE "QUEM PLANEJA"' },
+    { h:"Bloco 7 · Chamada", t:"82–95 SEGUNDOS",
+      f:"Eu mapeei isso e mais quinhentos e vinte pontos\nda educação pública de Santa Catarina —\ncada um com a fonte oficial.\n\nO link tá na descrição e no primeiro comentário.\n\nE se você é professor:\nquantas horas por semana você tem para planejar?\n\nMe diz nos comentários.",
+      pausa:"⟲ A PERGUNTA FINAL GERA COMENTÁRIO EM MASSA" }
+  ],
+  dicas: [
+    { h:"Como ler — três regras", itens:[
+      "<b>Números por extenso de propósito.</b> \"Cinquenta e três\" sai da boca melhor que \"53\". O olho lê o algarismo e a boca trava.",
+      "<b>Fale os números devagar.</b> No bloco 1, o espectador faz a conta na cabeça. Se você acelerar, ele perde — e a conta é o gancho.",
+      "<b>Nunca soe como cobrança.</b> Este vídeo defende o professor. Firmeza, não pena. Ele não quer dó — quer ser lido corretamente."
+    ]},
+    { h:"O que NÃO dizer", alerta:true, itens:[
+      "<b>Nunca</b> \"o professor trabalha pouco\" — é o contrário.",
+      "<b>Nunca</b> dizer que o Brasil descumpre a lei por má-fé. A formulação honesta: <i>\"a jornada praticada deixa menos de um terço para atividade extraclasse, contra o que a lei prevê.\"</i>",
+      "<b>Diga que é autorrelato.</b> TALIS é questionário respondido por professores. É o melhor dado comparável que existe — mas é percepção declarada, não folha de ponto.",
+      "<b>Não diga</b> \"menor carga do mundo\" nem \"2º menor\". O correto é <b>11ª menor carga</b> e <b>4º menor tempo extraclasse</b>, entre 56."
+    ]}
+  ]
+};
+
+ROTEIROS.dia = {
+  titulo: "200 dias de aula, 4 horas por dia",
+  meta: "VÍDEO 2 · cerca de 1min30",
+  blocos: [
+    { h:"Bloco 1 · Gancho", t:"0–7 SEGUNDOS",
+      f:"O Brasil tem duzentos dias de aula por ano.\n\nEstá entre os maiores do mundo.\n\nMas o dia de aula brasileiro tem quatro horas.\n\nQuatro." },
+    { h:"Bloco 2 · O ranking", t:"7–18 SEGUNDOS",
+      f:"Israel tem duzentos e catorze dias.\nO Japão, duzentos e dois.\n\nPortugal tem cento e sessenta e quatro.\nA Grécia, cento e sessenta.\n\nO Brasil está no topo da lista de dias letivos.\nO mundo fica em cento e setenta e sete." },
+    { h:"Bloco 3 · A virada", t:"18–32 SEGUNDOS",
+      f:"Só que dia não é hora.\n\nE aqui a conta vira.\n\nO aluno brasileiro passa quatro horas por dia em aula.\n\nA média mundial é cinco vírgula dois.\n\nUm vírgula dois por dia.\nDuzentos e quarenta horas por ano.",
+      pausa:"⟲ PAUSA — O NÚMERO PRECISA BATER" },
+    { h:"Bloco 4 · A anomalia", t:"32–48 SEGUNDOS",
+      f:"Nos anos finais do ensino fundamental,\no Brasil é o quinquagésimo primeiro\nentre cinquenta e oito sistemas.\n\nOitocentas horas por ano.\nA mediana é novecentas e setenta e duas.\n\nCento e setenta e duas horas a menos.\nDezoito por cento abaixo." },
+    { h:"Bloco 5 · O que não é", t:"48–62 SEGUNDOS",
+      f:"Isso não é o professor.\nIsso não é o aluno.\n\nÉ o desenho do dia escolar.\n\nA lei manda oitocentas horas.\nEla não define o que é uma hora." },
+    { h:"Bloco 6 · A saída", t:"62–78 SEGUNDOS",
+      f:"Em mil novecentos e noventa e seis,\na LDB organizou o ensino em duzentos dias.\n\nTrinta anos depois,\na pergunta que ninguém fez é:\n\nquanto vale um dia?" },
+    { h:"Bloco 7 · Chamada", t:"78–90 SEGUNDOS",
+      f:"Eu mapeei quinhentos e vinte pontos\nda educação pública de Santa Catarina.\n\nCada um com a fonte oficial.\n\nO link tá na descrição.\n\nE me diz: na sua escola,\nquantas horas tem o dia de aula?" }
+  ],
+  dicas: [
+    { h:"Como ler — o essencial", itens:[
+      "<b>\"Quatro.\" é uma frase sozinha.</b> Fale e pare. É o gancho do vídeo inteiro.",
+      "<b>Dia não é hora.</b> Esse é o motor. Se essa virada não ficar clara, o vídeo não funciona.",
+      "<b>Não converta para hora-aula.</b> A LDB não define \"hora\". Comparar hora-aula com hora relógio é erro que destrói a credibilidade."
+    ]},
+    { h:"O que NÃO dizer", alerta:true, itens:[
+      "<b>Nunca</b> diga que o Brasil tem poucos dias letivos — pelo contrário, está no topo.",
+      "<b>Nunca</b> culpe professor, aluno ou família. O problema é o desenho da jornada.",
+      "<b>Diga a fonte:</b> OCDE, dados de dias letivos e horas por ano, anos finais do ensino fundamental."
+    ]}
+  ]
+};
+
+/* ------------------------------------------------------------------ */
+
+var ATUAL = "lei";
+
+function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;"); }
+
+function textoPuro(chave){
+  var r = ROTEIROS[chave], out = [];
+  out.push("=== " + r.titulo.toUpperCase() + " ===");
+  out.push("");
+  for (var i=0;i<r.blocos.length;i++){
+    var b = r.blocos[i];
+    out.push("=== " + b.h.toUpperCase() + " (" + b.t + ") ===");
+    out.push("");
+    out.push(b.f);
+    if (b.pausa) out.push("", "[" + b.pausa.replace(/^⟲\s*/,"") + "]");
+    if (b.lei)   out.push("", "[" + b.lei + "]");
+    out.push("", "");
+  }
+  return out.join("\n");
 }
 
-document.getElementById("btnCopiar").addEventListener("click",function(){
-  var b=this;
-  function feito(){ b.textContent="Copiado"; b.classList.add("ok");
-    avisar("Agora cole no seu teleprompter");
-    setTimeout(function(){b.textContent="Copiar tudo"; b.classList.remove("ok");},2200); }
-  if(navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(texto).then(feito).catch(function(){ legado(); });
-  } else { legado(); }
+function desenha(chave){
+  ATUAL = chave;
+  var r = ROTEIROS[chave];
+  document.getElementById("titulo").textContent = r.titulo;
+  document.getElementById("meta").textContent = r.meta;
+  document.getElementById("abaA").className = "aba" + (chave==="lei" ? " on" : "");
+  document.getElementById("abaB").className = "aba" + (chave==="dia" ? " on" : "");
+
+  var h = [];
+  for (var i=0;i<r.blocos.length;i++){
+    var b = r.blocos[i];
+    h.push('<div class="bloco"><h2>' + esc(b.h) + '</h2>');
+    h.push('<div class="tempo">' + esc(b.t) + '</div>');
+    h.push('<div class="fala">' + esc(b.f) + '</div>');
+    if (b.pausa) h.push('<div class="pausa">' + esc(b.pausa) + '</div>');
+    if (b.lei)   h.push('<div class="aviso-lei">' + esc(b.lei) + '</div>');
+    h.push('</div>');
+  }
+  for (var j=0;j<r.dicas.length;j++){
+    var d = r.dicas[j];
+    var bg = d.alerta ? ' style="background:rgba(255,138,115,.1)"' : '';
+    h.push('<div class="dica"' + bg + '><h3>' + esc(d.h) + '</h3><ul>');
+    for (var k=0;k<d.itens.length;k++) h.push('<li>' + d.itens[k] + '</li>');
+    h.push('</ul></div>');
+  }
+  document.getElementById("conteudo").innerHTML = h.join("");
+
+  var puro = document.getElementById("puro");
+  if (puro) { puro.textContent = textoPuro(chave); }
+  document.body.classList.remove("leitura");
+  document.getElementById("btnModo").textContent = "Modo leitura";
+}
+
+function toast(m){
+  var t = document.getElementById("toast");
+  t.textContent = m; t.classList.add("on");
+  setTimeout(function(){ t.classList.remove("on"); }, 1800);
+}
+
+document.getElementById("abaA").onclick = function(){ desenha("lei"); };
+document.getElementById("abaB").onclick = function(){ desenha("dia"); };
+
+document.getElementById("btnCopiar").onclick = function(){
+  var b = this, txt = textoPuro(ATUAL);
+  function feito(){ b.textContent = "Copiado"; b.classList.add("ok");
+    toast("Agora cole no seu teleprompter");
+    setTimeout(function(){ b.textContent = "Copiar tudo"; b.classList.remove("ok"); }, 2200); }
   function legado(){
-    var t=document.createElement("textarea");
-    t.value=texto; t.style.position="fixed"; t.style.opacity="0";
+    var t = document.createElement("textarea");
+    t.value = txt; t.style.position = "fixed"; t.style.opacity = "0";
     document.body.appendChild(t); t.select();
-    try{ document.execCommand("copy"); feito(); }catch(e){ alert("Nao consegui copiar. Use \u201cVer como texto puro\u201d."); }
+    try { document.execCommand("copy"); feito(); }
+    catch(e){ alert("Nao consegui copiar. Use o botao de texto puro."); }
     document.body.removeChild(t);
   }
-});
+  if (navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(feito).catch(legado);
+  } else { legado(); }
+};
 
-document.getElementById("btnTexto").addEventListener("click",function(){
-  var pre=document.getElementById("puro");
-  if(pre){ pre.remove(); this.textContent="Ver como texto puro"; return; }
-  pre=document.createElement("pre");
-  pre.id="puro"; pre.textContent=texto;
-  pre.style.cssText="background:#17303F;border-radius:14px;padding:18px;margin:16px 20px 0;"+
+document.getElementById("btnTexto").onclick = function(){
+  var pre = document.getElementById("puro");
+  if (pre){ pre.remove(); this.textContent = "Ver como texto puro"; return; }
+  pre = document.createElement("pre");
+  pre.id = "puro"; pre.textContent = textoPuro(ATUAL);
+  pre.style.cssText = "background:#17303F;border-radius:14px;padding:18px;margin:16px 0 0;"+
     "font-size:15px;line-height:1.7;color:#C9CFD2;white-space:pre-wrap;"+
     "word-break:break-word;font-family:ui-monospace,Menlo,Consolas,monospace;";
   document.getElementById("conteudo").appendChild(pre);
-  this.textContent="Esconder texto puro";
+  this.textContent = "Esconder texto puro";
   pre.scrollIntoView({behavior:"smooth",block:"start"});
-});
+};
 
-document.getElementById("btnModo").addEventListener("click",function(){
-  var on=document.body.classList.toggle("leitura");
-  var blocos=document.querySelectorAll(".bloco");
-  for(var i=0;i<blocos.length;i++){
-    blocos[i].style.background = on ? "transparent" : "";
-    blocos[i].style.borderLeft = on ? "0" : "";
-    blocos[i].style.padding = on ? "26px 0" : "";
+document.getElementById("btnModo").onclick = function(){
+  var on = document.body.classList.toggle("leitura");
+  var bs = document.querySelectorAll(".bloco");
+  for (var i=0;i<bs.length;i++){
+    bs[i].style.background = on ? "transparent" : "";
+    bs[i].style.borderLeft = on ? "0" : "";
+    bs[i].style.padding = on ? "26px 0" : "";
   }
-  var fs=document.querySelectorAll(".fala");
-  for(var j=0;j<fs.length;j++){ fs[j].style.fontSize = on ? "30px" : ""; }
-  document.querySelectorAll(".dica")[0].style.display = on ? "none" : "";
+  var fs = document.querySelectorAll(".fala");
+  for (var j=0;j<fs.length;j++){ fs[j].style.fontSize = on ? "30px" : ""; }
+  var d = document.querySelectorAll(".dica");
+  for (var k=0;k<d.length;k++){ d[k].style.display = on ? "none" : ""; }
   this.textContent = on ? "Modo normal" : "Modo leitura";
   window.scrollTo({top:0});
-});
+};
+
+desenha("lei");
 </script>
 </body>
 </html>
