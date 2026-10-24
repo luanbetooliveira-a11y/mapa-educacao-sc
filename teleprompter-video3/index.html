@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0F2233">
+<title>Teleprompter — Vídeo 3 · Escola em Questão</title>
+<style>
+  :root{
+    --fundo:#0F2233; --card:#17303F; --alto:#22404F; --raiz:#193F55;
+    --branco:#FFFFFF; --apoio:#C9CFD2; --credito:#8A959C;
+    --brasil:#6FB6E8; --melhora:#3DBE7A; --neutro:#F2C14E; --piora:#FF8A73;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--fundo);color:var(--branco);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;}
+  body{padding:0 0 120px;line-height:1.5;}
+
+  header{position:sticky;top:0;z-index:10;background:rgba(15,34,51,.96);
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--alto);padding:14px 20px 12px;}
+  .marca{font-size:13px;font-weight:600;color:var(--credito);letter-spacing:.5px;}
+  .titulo{font-size:17px;font-weight:700;margin-top:2px;}
+  .meta{font-size:12px;color:var(--credito);margin-top:3px;}
+
+  .acoes{display:flex;gap:10px;margin-top:14px;}
+  button{flex:1;border:0;border-radius:12px;padding:15px 12px;
+    font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;
+    transition:transform .08s ease;}
+  button:active{transform:scale(.97);}
+  .principal{background:var(--brasil);color:#0F2233;}
+  .secundario{background:var(--alto);color:var(--branco);}
+  .ok{background:var(--melhora)!important;color:#0F2233!important;}
+
+  main{padding:22px 20px 0;}
+  .bloco{background:var(--card);border-radius:14px;padding:20px 18px;margin-bottom:16px;
+    border-left:5px solid var(--raiz);}
+  .bloco h2{font-size:12px;font-weight:700;color:var(--credito);
+    letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;}
+  .tempo{font-size:11px;color:var(--brasil);font-weight:700;letter-spacing:.5px;
+    margin-bottom:14px;}
+  .fala{font-size:19px;line-height:1.65;color:var(--branco);white-space:pre-line;}
+  .pausa{display:inline-block;background:rgba(242,193,78,.14);color:var(--neutro);
+    border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;
+    letter-spacing:.8px;margin:14px 0 6px;line-height:1.4;}
+  .aviso-lei{background:rgba(111,182,232,.12);color:var(--brasil);border-radius:6px;
+    padding:5px 12px;font-size:12px;font-weight:700;margin:12px 0 4px;
+    display:inline-block;line-height:1.4;}
+
+  .dica{background:var(--raiz);border-radius:14px;padding:20px 18px;margin:26px 0 0;}
+  .dica h3{font-size:14px;margin-bottom:12px;}
+  .dica li{font-size:15px;color:var(--apoio);margin:9px 0 9px 18px;line-height:1.5;}
+  .dica b{color:var(--branco);}
+
+  .barra{position:fixed;left:0;right:0;bottom:0;z-index:10;
+    background:rgba(15,34,51,.96);backdrop-filter:blur(12px);
+    -webkit-backdrop-filter:blur(12px);border-top:1px solid var(--alto);
+    padding:12px 20px calc(12px + env(safe-area-inset-bottom));}
+  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);
+    background:var(--melhora);color:#0F2233;font-size:14px;font-weight:700;
+    padding:12px 22px;border-radius:30px;opacity:0;pointer-events:none;
+    transition:all .25s ease;z-index:20;white-space:nowrap;}
+  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="marca">@luanoliveira.educacao</div>
+  <div class="titulo">O professor brasileiro ensina mais do que a lei permite</div>
+  <div class="meta">VÍDEO 3 · cerca de 1min35</div>
+  <div class="acoes">
+    <button class="secundario" id="btnCopiar">Copiar tudo</button>
+    <button class="principal" id="btnModo">Modo leitura</button>
+  </div>
+</header>
+
+<main id="conteudo">
+  <div class="bloco">
+    <h2>Bloco 1 · Gancho</h2>
+    <div class="tempo">0–8 SEGUNDOS</div>
+    <div class="fala">O professor brasileiro dá mais aula que o japonês.
+
+O japonês trabalha cinquenta e três horas por semana e dá dezessete.
+
+O brasileiro trabalha trinta e duas —
+e dá vinte e três.</div>
+  </div>
+
+  <div class="bloco">
+    <h2>Bloco 2 · A revelação</h2>
+    <div class="tempo">8–20 SEGUNDOS</div>
+    <div class="fala">O professor brasileiro passa setenta e três por cento
+do tempo de trabalho dentro da sala de aula.
+
+A lei brasileira diz que ele não pode passar de dois terços.
+
+Dois terços é sessenta e seis vírgula sete.</div>
+    <div class="pausa">⟲ PAUSA — DEIXE OS DOIS NÚMEROS NA TELA</div>
+  </div>
+
+  <div class="bloco">
+    <h2>Bloco 3 · A lei</h2>
+    <div class="tempo">20–32 SEGUNDOS</div>
+    <div class="fala">Não é opinião minha.
+
+É a Lei onze mil setecentos e trinta e oito, de dois mil e oito,
+artigo segundo, parágrafo quarto.
+
+No máximo dois terços da carga horária em interação com os alunos.
+
+Ou seja: no mínimo um terço
+é para planejar, corrigir e se formar.</div>
+    <div class="aviso-lei">LEI 11.738/2008 · VIGENTE APÓS A LEI 15.437/2026</div>
+  </div>
+
+  <div class="bloco">
+    <h2>Bloco 4 · O que sobra</h2>
+    <div class="tempo">32–50 SEGUNDOS</div>
+    <div class="fala">Então sobra um terço.
+Quanto é um terço, na prática?
+
+O professor brasileiro tem oito vírgula sete horas por semana
+para planejar, corrigir e estudar.
+
+O japonês tem trinta e cinco vírgula seis.
+
+Quatro vezes mais.</div>
+    <div class="pausa">⟲ PAUSA DE 3 SEGUNDOS — O GRÁFICO PRECISA APARECER SOZINHO</div>
+  </div>
+
+  <div class="bloco">
+    <h2>Bloco 5 · Virando a mesa</h2>
+    <div class="tempo">50–68 SEGUNDOS</div>
+    <div class="fala">Repara no que isso não é.
+
+Não é o professor trabalhando pouco.
+Ele tem uma das menores cargas totais
+entre cinquenta e seis sistemas comparados —
+e a maior parte dela em sala.
+
+Não é falta de esforço.
+É falta de tempo fora da sala.
+
+O professor brasileiro não está na sala dos professores.
+Ele está na sala de aula.</div>
+  </div>
+
+  <div class="bloco">
+    <h2>Bloco 6 · A pergunta</h2>
+    <div class="tempo">68–82 SEGUNDOS</div>
+    <div class="fala">E aí vem a pergunta que ninguém faz.
+
+Se o professor não tem tempo de planejar,
+quem planeja a aula que o aluno recebe?
+
+A resposta é: ninguém.
+Ou ele, de madrugada, de graça.</div>
+    <div class="pausa">⟲ PAUSA ANTES DE "QUEM PLANEJA"</div>
+  </div>
+
+  <div class="bloco">
+    <h2>Bloco 7 · Chamada</h2>
+    <div class="tempo">82–95 SEGUNDOS</div>
+    <div class="fala">Eu mapeei isso e mais quinhentos e vinte pontos
+da educação pública de Santa Catarina —
+cada um com a fonte oficial.
+
+O link tá na descrição e no primeiro comentário.
+
+E se você é professor:
+quantas horas por semana você tem para planejar?
+
+Me diz nos comentários.</div>
+    <div class="pausa">⟲ A PERGUNTA FINAL GERA COMENTÁRIO EM MASSA</div>
+  </div>
+
+  <div class="dica">
+    <h3>Como ler — três regras</h3>
+    <ul>
+      <li><b>Números por extenso de propósito.</b> "Cinquenta e três" sai da boca
+      melhor que "53". O olho lê o algarismo e a boca trava.</li>
+      <li><b>Fale os números devagar.</b> No bloco 1, o espectador faz a conta na
+      cabeça. Se você acelerar, ele perde — e a conta é o gancho.</li>
+      <li><b>Nunca soe como cobrança.</b> Este vídeo defende o professor. Firmeza,
+      não pena. Ele não quer dó — quer ser lido corretamente.</li>
+    </ul>
+  </div>
+
+  <div class="dica" style="background:rgba(255,138,115,.1)">
+    <h3>O que NÃO dizer</h3>
+    <ul>
+      <li><b>Nunca</b> "o professor trabalha pouco" — é o contrário.</li>
+      <li><b>Nunca</b> dizer que o Brasil descumpre a lei por má-fé. A formulação
+      honesta: <i>"a jornada praticada deixa menos de um terço para atividade
+      extraclasse, contra o que a lei prevê."</i></li>
+      <li><b>Diga que é autorrelato.</b> TALIS é questionário respondido por
+      professores. É o melhor dado comparável que existe — mas é percepção
+      declarada, não folha de ponto.</li>
+      <li><b>Não diga</b> "menor carga do mundo" nem "2º menor". O correto é
+      <b>11ª menor carga</b> e <b>4º menor tempo extraclasse</b>, entre 56.</li>
+    </ul>
+  </div>
+</main>
+
+<div class="barra">
+  <button class="secundario" id="btnTexto">Ver como texto puro</button>
+</div>
+<div class="toast" id="toast">Copiado</div>
+
+<script>
+var texto = [
+"=== BLOCO 1 - GANCHO (0-8s) ===",
+"",
+"O professor brasileiro da mais aula que o japones.",
+"",
+"O japones trabalha cinquenta e tres horas por semana e da dezessete.",
+"",
+"O brasileiro trabalha trinta e duas -",
+"e da vinte e tres.",
+"",
+"",
+"=== BLOCO 2 - A REVELACAO (8-20s) ===",
+"",
+"O professor brasileiro passa setenta e tres por cento",
+"do tempo de trabalho dentro da sala de aula.",
+"",
+"A lei brasileira diz que ele nao pode passar de dois tercos.",
+"",
+"Dois tercos e sessenta e seis virgula sete.",
+"",
+"[PAUSA - deixe os dois numeros na tela]",
+"",
+"",
+"=== BLOCO 3 - A LEI (20-32s) ===",
+"",
+"Nao e opiniao minha.",
+"",
+"E a Lei onze mil setecentos e trinta e oito, de dois mil e oito,",
+"artigo segundo, paragrafo quarto.",
+"",
+"No maximo dois tercos da carga horaria em interacao com os alunos.",
+"",
+"Ou seja: no minimo um terco",
+"e para planejar, corrigir e se formar.",
+"",
+"",
+"=== BLOCO 4 - O QUE SOBRA (32-50s) ===",
+"",
+"Entao sobra um terco.",
+"Quanto e um terco, na pratica?",
+"",
+"O professor brasileiro tem oito virgula sete horas por semana",
+"para planejar, corrigir e estudar.",
+"",
+"O japones tem trinta e cinco virgula seis.",
+"",
+"Quatro vezes mais.",
+"",
+"[PAUSA LONGA - 3 SEGUNDOS]",
+"",
+"",
+"=== BLOCO 5 - VIRANDO A MESA (50-68s) ===",
+"",
+"Repara no que isso nao e.",
+"",
+"Nao e o professor trabalhando pouco.",
+"Ele tem uma das menores cargas totais",
+"entre cinquenta e seis sistemas comparados -",
+"e a maior parte dela em sala.",
+"",
+"Nao e falta de esforco.",
+"E falta de tempo fora da sala.",
+"",
+"O professor brasileiro nao esta na sala dos professores.",
+"Ele esta na sala de aula.",
+"",
+"",
+"=== BLOCO 6 - A PERGUNTA (68-82s) ===",
+"",
+"E ai vem a pergunta que ninguem faz.",
+"",
+"Se o professor nao tem tempo de planejar,",
+"quem planeja a aula que o aluno recebe?",
+"",
+"A resposta e: ninguem.",
+"Ou ele, de madrugada, de graca.",
+"",
+"",
+"=== BLOCO 7 - CHAMADA (82-95s) ===",
+"",
+"Eu mapeei isso e mais quinhentos e vinte pontos",
+"da educacao publica de Santa Catarina -",
+"cada um com a fonte oficial.",
+"",
+"O link ta na descricao e no primeiro comentario.",
+"",
+"E se voce e professor:",
+"quantas horas por semana voce tem para planejar?",
+"",
+"Me diz nos comentarios."
+].join("\n");
+
+function toast(m){
+  var t=document.getElementById("toast");
+  t.textContent=m; t.classList.add("on");
+  setTimeout(function(){t.classList.remove("on");},1800);
+}
+
+document.getElementById("btnCopiar").addEventListener("click",function(){
+  var b=this;
+  function feito(){ b.textContent="Copiado"; b.classList.add("ok");
+    toast("Agora cole no seu teleprompter");
+    setTimeout(function(){b.textContent="Copiar tudo"; b.classList.remove("ok");},2200); }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(texto).then(feito).catch(function(){ legado(); });
+  } else { legado(); }
+  function legado(){
+    var t=document.createElement("textarea");
+    t.value=texto; t.style.position="fixed"; t.style.opacity="0";
+    document.body.appendChild(t); t.select();
+    try{ document.execCommand("copy"); feito(); }
+    catch(e){ alert("Nao consegui copiar. Use o botao de texto puro."); }
+    document.body.removeChild(t);
+  }
+});
+
+document.getElementById("btnTexto").addEventListener("click",function(){
+  var pre=document.getElementById("puro");
+  if(pre){ pre.remove(); this.textContent="Ver como texto puro"; return; }
+  pre=document.createElement("pre");
+  pre.id="puro"; pre.textContent=texto;
+  pre.style.cssText="background:#17303F;border-radius:14px;padding:18px;margin:16px 20px 0;"+
+    "font-size:15px;line-height:1.7;color:#C9CFD2;white-space:pre-wrap;"+
+    "word-break:break-word;font-family:ui-monospace,Menlo,Consolas,monospace;";
+  document.getElementById("conteudo").appendChild(pre);
+  this.textContent="Esconder texto puro";
+  pre.scrollIntoView({behavior:"smooth",block:"start"});
+});
+
+document.getElementById("btnModo").addEventListener("click",function(){
+  var on=document.body.classList.toggle("leitura");
+  var bs=document.querySelectorAll(".bloco");
+  for(var i=0;i<bs.length;i++){
+    bs[i].style.background = on ? "transparent" : "";
+    bs[i].style.borderLeft = on ? "0" : "";
+    bs[i].style.padding = on ? "26px 0" : "";
+  }
+  var fs=document.querySelectorAll(".fala");
+  for(var j=0;j<fs.length;j++){ fs[j].style.fontSize = on ? "30px" : ""; }
+  var d=document.querySelectorAll(".dica");
+  for(var k=0;k<d.length;k++){ d[k].style.display = on ? "none" : ""; }
+  this.textContent = on ? "Modo normal" : "Modo leitura";
+  window.scrollTo({top:0});
+});
+</script>
+</body>
+</html>
