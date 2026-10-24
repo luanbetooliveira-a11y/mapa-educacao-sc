@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0F2233">
 <meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>Teleprompter · Escola em Questão</title>
 <style>
   :root{--fundo:#0F2233;--card:#17303F;--alto:#22404F;--raiz:#193F55;
@@ -12,9 +13,12 @@
     --brasil:#6FB6E8;--melhora:#3DBE7A;--neutro:#F2C14E;--piora:#FF8A73;}
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{background:var(--fundo);color:var(--branco);
-    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;}
-  body{padding:0 0 120px;line-height:1.5;}
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,sans-serif;
+    overscroll-behavior:none;}
+  body{padding:0;line-height:1.5;}
 
+  /* ---------- modo preparo (escolher roteiro e velocidade) ---------- */
+  #preparo{padding:0 0 40px;}
   header{position:sticky;top:0;z-index:10;background:rgba(15,34,51,.96);
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
     border-bottom:1px solid var(--alto);padding:14px 20px 12px;}
@@ -22,275 +26,504 @@
   .titulo{font-size:17px;font-weight:700;margin-top:2px;}
   .meta{font-size:12px;color:var(--credito);margin-top:3px;}
 
-  .abas{display:flex;gap:8px;margin-top:14px;}
-  .aba{flex:1;background:var(--alto);border:0;border-radius:10px;padding:12px 8px;
-    font-size:13px;font-weight:700;font-family:inherit;color:var(--apoio);
+  .secao{padding:20px 20px 0;}
+  .rotulo{font-size:11px;font-weight:700;color:var(--credito);letter-spacing:1.4px;
+    text-transform:uppercase;margin-bottom:10px;}
+
+  .abas{display:flex;gap:8px;}
+  .aba{flex:1;background:var(--alto);border:0;border-radius:10px;padding:14px 10px;
+    font-size:14px;font-weight:700;font-family:inherit;color:var(--apoio);
     cursor:pointer;line-height:1.3;transition:transform .08s ease;}
   .aba:active{transform:scale(.97);}
   .aba.on{background:var(--brasil);color:#0F2233;}
+  .aba small{display:block;font-size:11px;font-weight:600;opacity:.75;margin-top:3px;}
 
-  .acoes{display:flex;gap:10px;margin-top:10px;}
-  .acoes button{flex:1;border:0;border-radius:12px;padding:15px 12px;
-    font-size:15px;font-weight:700;font-family:inherit;cursor:pointer;
-    transition:transform .08s ease;}
-  .acoes button:active{transform:scale(.97);}
-  .principal{background:var(--brasil);color:#0F2233;}
-  .secundario{background:var(--alto);color:var(--branco);}
-  .ok{background:var(--melhora)!important;color:#0F2233!important;}
+  .vel{display:flex;align-items:center;gap:14px;background:var(--card);
+    border-radius:14px;padding:16px 18px;}
+  .vel input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:6px;
+    border-radius:3px;background:var(--alto);outline:none;}
+  .vel input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;
+    width:30px;height:30px;border-radius:50%;background:var(--brasil);
+    cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4);}
+  .vel input[type=range]::-moz-range-thumb{width:30px;height:30px;border:0;
+    border-radius:50%;background:var(--brasil);cursor:pointer;}
+  .vel .val{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:19px;
+    font-weight:700;color:var(--brasil);min-width:78px;text-align:right;}
+  .velInfo{font-size:12px;color:var(--credito);margin-top:10px;line-height:1.5;}
+  .velInfo b{color:var(--apoio);}
 
-  main{padding:22px 20px 0;}
-  .bloco{background:var(--card);border-radius:14px;padding:20px 18px;margin-bottom:16px;
-    border-left:5px solid var(--raiz);}
-  .bloco h2{font-size:12px;font-weight:700;color:var(--credito);
-    letter-spacing:1.4px;text-transform:uppercase;margin-bottom:4px;}
-  .tempo{font-size:11px;color:var(--brasil);font-weight:700;letter-spacing:.5px;
-    margin-bottom:14px;}
-  .fala{font-size:19px;line-height:1.65;color:var(--branco);white-space:pre-line;}
-  .pausa{display:inline-block;background:rgba(242,193,78,.14);color:var(--neutro);
-    border-radius:6px;padding:4px 12px;font-size:12px;font-weight:700;
-    letter-spacing:.8px;margin:14px 0 6px;line-height:1.4;}
-  .aviso-lei{background:rgba(111,182,232,.12);color:var(--brasil);border-radius:6px;
-    padding:5px 12px;font-size:12px;font-weight:700;margin:12px 0 4px;
-    display:inline-block;line-height:1.4;}
+  .presets{display:flex;gap:8px;margin-top:12px;}
+  .preset{flex:1;background:var(--card);border:2px solid var(--alto);border-radius:10px;
+    padding:11px 6px;font-size:13px;font-weight:700;font-family:inherit;
+    color:var(--apoio);cursor:pointer;}
+  .preset.on{border-color:var(--brasil);color:var(--brasil);}
 
-  .dica{background:var(--raiz);border-radius:14px;padding:20px 18px;margin:26px 0 0;}
-  .dica h3{font-size:14px;margin-bottom:12px;}
-  .dica li{font-size:15px;color:var(--apoio);margin:9px 0 9px 18px;line-height:1.5;}
-  .dica b{color:var(--branco);}
+  .go{width:100%;border:0;border-radius:14px;padding:20px;font-size:19px;
+    font-weight:800;font-family:inherit;background:var(--brasil);color:#0F2233;
+    cursor:pointer;margin-top:18px;}
+  .go:active{transform:scale(.98);}
 
-  .barra{position:fixed;left:0;right:0;bottom:0;z-index:10;
-    background:rgba(15,34,51,.96);backdrop-filter:blur(12px);
-    -webkit-backdrop-filter:blur(12px);border-top:1px solid var(--alto);
-    padding:12px 20px calc(12px + env(safe-area-inset-bottom));}
-  .barra button{width:100%;border:0;border-radius:12px;padding:15px;
-    font-size:15px;font-weight:700;font-family:inherit;background:var(--alto);
-    color:var(--branco);cursor:pointer;}
-  .toast{position:fixed;left:50%;bottom:100px;transform:translateX(-50%) translateY(20px);
-    background:var(--melhora);color:#0F2233;font-size:14px;font-weight:700;
-    padding:12px 22px;border-radius:30px;opacity:0;pointer-events:none;
-    transition:all .25s ease;z-index:20;white-space:nowrap;}
-  .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
-  .oculto{display:none;}
+  .dica{background:var(--raiz);border-radius:14px;padding:18px;margin:18px 20px 0;}
+  .dica h3{font-size:13px;margin-bottom:8px;color:var(--branco);}
+  .dica p{font-size:13px;color:var(--apoio);line-height:1.55;}
+
+  /* ---------- modo leitura (rolagem automatica) ---------- */
+  #leitura{position:fixed;inset:0;background:var(--fundo);display:none;
+    flex-direction:column;z-index:100;}
+  body.rodando #preparo{display:none;}
+  body.rodando #leitura{display:flex;}
+  body.rodando{overflow:hidden;}
+
+  .linhaGuia{position:absolute;left:0;right:0;top:38%;height:0;
+    border-top:2px dashed rgba(242,193,78,.5);z-index:3;pointer-events:none;}
+  .linhaGuia::after{content:"leia aqui";position:absolute;right:14px;top:-24px;
+    font-size:11px;font-weight:700;color:var(--neutro);letter-spacing:.8px;}
+
+  #palco{flex:1;overflow:hidden;position:relative;
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 78%,transparent 100%);
+    mask-image:linear-gradient(180deg,transparent 0,#000 16%,#000 78%,transparent 100%);}
+  #texto{position:absolute;left:0;right:0;top:0;padding:0 26px;
+    will-change:transform;}
+  #texto .bloco{margin-bottom:52px;}
+  #texto .bh{font-size:12px;font-weight:700;color:var(--credito);letter-spacing:1.4px;
+    text-transform:uppercase;margin-bottom:8px;}
+  #texto .fala{font-size:34px;line-height:1.72;color:var(--branco);
+    font-weight:500;white-space:pre-line;}
+  #texto .pausa{display:inline-block;background:rgba(242,193,78,.16);
+    color:var(--neutro);border-radius:6px;padding:6px 14px;font-size:15px;
+    font-weight:700;letter-spacing:.8px;margin-top:18px;line-height:1.4;}
+
+  .hud{background:rgba(23,48,63,.97);border-top:1px solid var(--alto);
+    padding:14px 18px calc(14px + env(safe-area-inset-bottom));z-index:5;}
+  .hudTop{display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;color:var(--credito);margin-bottom:12px;}
+  .hudTop b{color:var(--brasil);font-size:14px;}
+  .hudBtns{display:flex;gap:10px;}
+  .hudBtns button{flex:1;border:0;border-radius:12px;padding:17px 8px;
+    font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;}
+  .bPlay{background:var(--melhora);color:#0F2233;}
+  .bPlay.pausado{background:var(--neutro);}
+  .bSlow,.bFast{background:var(--alto);color:var(--branco);flex:0 0 auto!important;
+    width:62px;font-size:22px!important;}
+  .bSair{background:var(--piora);color:#0F2233;flex:0 0 auto!important;
+    width:62px;font-size:18px!important;}
+
+  .avisoFim{position:absolute;inset:0;display:none;place-items:center;
+    background:rgba(15,34,51,.94);z-index:6;text-align:center;padding:30px;}
+  .avisoFim.on{display:grid;}
+  .avisoFim div{font-size:26px;font-weight:800;color:var(--melhora);}
+  .avisoFim small{display:block;font-size:14px;color:var(--apoio);
+    font-weight:400;margin-top:12px;line-height:1.5;}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="marca">@luanoliveira.educacao · uso interno</div>
-  <div class="titulo" id="titulo">Teleprompter</div>
-  <div class="meta" id="meta"></div>
-  <div class="abas">
-    <button class="aba" id="abaA">O professor brasileiro<br>ensina mais que a lei</button>
-    <button class="aba" id="abaB">200 dias, 4 horas<br>o dia escolar</button>
-  </div>
-  <div class="acoes">
-    <button class="secundario" id="btnCopiar">Copiar tudo</button>
-    <button class="principal" id="btnModo">Modo leitura</button>
-  </div>
-</header>
+<!-- ============================ PREPARO ============================ -->
+<div id="preparo">
+  <header>
+    <div class="marca">@luanoliveira.educacao</div>
+    <div class="titulo">Teleprompter</div>
+    <div class="meta" id="metaTop"></div>
+  </header>
 
-<main id="conteudo"></main>
+  <div class="secao">
+    <div class="rotulo">Roteiro</div>
+    <div class="abas">
+      <button class="aba" id="abaA">Ensina mais que a lei<small id="smA"></small></button>
+      <button class="aba" id="abaB">200 dias, 4 horas<small id="smB"></small></button>
+    </div>
+  </div>
 
-<div class="barra">
-  <button id="btnTexto">Ver como texto puro</button>
+  <div class="secao">
+    <div class="rotulo">Velocidade da rolagem</div>
+    <div class="vel">
+      <span style="font-size:20px">🐢</span>
+      <input type="range" id="range" min="1" max="100" value="38">
+      <span style="font-size:20px">🐇</span>
+      <span class="val" id="valVel">—</span>
+    </div>
+    <div class="presets">
+      <button class="preset" data-p="26">Devagar</button>
+      <button class="preset" data-p="38">Natural</button>
+      <button class="preset" data-p="52">Rápido</button>
+    </div>
+    <div class="velInfo" id="velInfo"></div>
+  </div>
+
+  <div class="secao">
+    <button class="go" id="btnIniciar">▶ Iniciar teleprompter</button>
+  </div>
+
+  <div class="dica">
+    <h3>Como funciona</h3>
+    <p><b>Toque em qualquer lugar da tela para pausar</b> e de novo para continuar.
+    Os botões <b>−</b> e <b>+</b> embaixo ajustam a velocidade enquanto roda.
+    A linha amarela tracejada é onde você lê — o texto sobe até ela.</p>
+  </div>
+
+  <div class="dica" style="background:rgba(111,182,232,.1)">
+    <h3>Antes de gravar</h3>
+    <p>Coloque o celular no suporte, na altura dos olhos, e trave a rotação da tela.
+    Ajuste a velocidade <b>lendo em voz alta uma vez</b> — é mais confiável que
+    escolher no chute. Se o texto subir mais rápido que sua fala, abaixe.</p>
+  </div>
+
+  <div class="secao">
+    <button class="preset" id="btnTexto" style="width:100%;padding:15px">
+      Ver como texto puro (para copiar)</button>
+  </div>
 </div>
-<div class="toast" id="toast">Copiado</div>
+
+<!-- ============================ LEITURA ============================ -->
+<div id="leitura">
+  <div id="palco">
+    <div class="linhaGuia"></div>
+    <div id="texto"></div>
+    <div class="avisoFim" id="avisoFim">
+      <div>Fim do roteiro<small>Toque em ✕ para voltar</small></div>
+    </div>
+  </div>
+  <div class="hud">
+    <div class="hudTop">
+      <span id="hudNome">—</span>
+      <span><b id="hudVel">—</b> · <span id="hudPct">0%</span></span>
+    </div>
+    <div class="hudBtns">
+      <button class="bSair" id="btnSair">✕</button>
+      <button class="bSlow" id="btnSlow">−</button>
+      <button class="bPlay pausado" id="btnPlay">▶ Iniciar</button>
+      <button class="bFast" id="btnFast">+</button>
+    </div>
+  </div>
+</div>
 
 <script>
-/* ------------------------------------------------------------------
-   Dois roteiros no mesmo endereco. O VIDEO 3 vem primeiro: e o que
-   esta sendo gravado agora. O VIDEO 2 fica na segunda aba.
-   Endereco curto de proposito: /teleprompter/ e mais facil de ditar.
------------------------------------------------------------------- */
+/* ==================================================================
+   Teleprompter com rolagem automatica.
+
+   A velocidade e' guardada como "palavras por minuto" e convertida em
+   pixels por segundo a partir da altura real do texto. Assim o mesmo
+   ajuste funciona nos dois roteiros, que tem tamanhos diferentes.
+
+   Escolhi rolagem por transform (nao scrollTop) porque no iOS o
+   requestAnimationFrame + scrollTop da engasgo; transform na GPU nao.
+================================================================== */
 
 var ROTEIROS = {};
+var ATUAL = "lei";
+var VEL = 150;                 // palavras por minuto
+var rodando = false, pausado = true, pos = 0, t0 = 0, raf = null;
+var alturaTexto = 0, offsetInicial = 0, precisaRolar = true;
+
+var PRESETS = {devagar:118, natural:150, rapido:185};
+var CHAVE_VEL = "tp_velocidade_v1";
 
 ROTEIROS.lei = {
-  titulo: "O professor brasileiro ensina mais do que a lei permite",
-  meta: "VÍDEO 3 · cerca de 1min35",
+  nome: "Ensina mais que a lei",
+  meta: "VÍDEO 3 · o professor ensina mais do que a lei permite",
   blocos: [
-    { h:"Bloco 1 · Gancho", t:"0–8 SEGUNDOS",
+    { h:"Bloco 1 · Gancho",
       f:"O professor brasileiro dá mais aula que o japonês.\n\nO japonês trabalha cinquenta e três horas por semana e dá dezessete.\n\nO brasileiro trabalha trinta e duas —\ne dá vinte e três." },
-    { h:"Bloco 2 · A revelação", t:"8–20 SEGUNDOS",
+    { h:"Bloco 2 · A revelação",
       f:"O professor brasileiro passa setenta e três por cento\ndo tempo de trabalho dentro da sala de aula.\n\nA lei brasileira diz que ele não pode passar de dois terços.\n\nDois terços é sessenta e seis vírgula sete.",
-      pausa:"⟲ PAUSA — DEIXE OS DOIS NÚMEROS NA TELA" },
-    { h:"Bloco 3 · A lei", t:"20–32 SEGUNDOS",
-      f:"Não é opinião minha.\n\nÉ a Lei onze mil setecentos e trinta e oito, de dois mil e oito,\nartigo segundo, parágrafo quarto.\n\nNo máximo dois terços da carga horária em interação com os alunos.\n\nOu seja: no mínimo um terço\né para planejar, corrigir e se formar.",
-      lei:"LEI 11.738/2008 · VIGENTE APÓS A LEI 15.437/2026" },
-    { h:"Bloco 4 · O que sobra", t:"32–50 SEGUNDOS",
+      p:"PAUSA — deixe os dois números na tela" },
+    { h:"Bloco 3 · A lei",
+      f:"Não é opinião minha.\n\nÉ a Lei onze mil setecentos e trinta e oito, de dois mil e oito,\nartigo segundo, parágrafo quarto.\n\nNo máximo dois terços da carga horária em interação com os alunos.\n\nOu seja: no mínimo um terço\né para planejar, corrigir e se formar." },
+    { h:"Bloco 4 · O que sobra",
       f:"Então sobra um terço.\nQuanto é um terço, na prática?\n\nO professor brasileiro tem oito vírgula sete horas por semana\npara planejar, corrigir e estudar.\n\nO japonês tem trinta e cinco vírgula seis.\n\nQuatro vezes mais.",
-      pausa:"⟲ PAUSA DE 3 SEGUNDOS — O GRÁFICO PRECISA APARECER SOZINHO" },
-    { h:"Bloco 5 · Virando a mesa", t:"50–68 SEGUNDOS",
+      p:"PAUSA DE 3 SEGUNDOS — o gráfico aparece sozinho" },
+    { h:"Bloco 5 · Virando a mesa",
       f:"Repara no que isso não é.\n\nNão é o professor trabalhando pouco.\nEle tem uma das menores cargas totais\nentre cinquenta e seis sistemas comparados —\ne a maior parte dela em sala.\n\nNão é falta de esforço.\nÉ falta de tempo fora da sala.\n\nO professor brasileiro não está na sala dos professores.\nEle está na sala de aula." },
-    { h:"Bloco 6 · A pergunta", t:"68–82 SEGUNDOS",
+    { h:"Bloco 6 · A pergunta",
       f:"E aí vem a pergunta que ninguém faz.\n\nSe o professor não tem tempo de planejar,\nquem planeja a aula que o aluno recebe?\n\nA resposta é: ninguém.\nOu ele, de madrugada, de graça.",
-      pausa:'⟲ PAUSA ANTES DE "QUEM PLANEJA"' },
-    { h:"Bloco 7 · Chamada", t:"82–95 SEGUNDOS",
-      f:"Eu mapeei isso e mais quinhentos e vinte pontos\nda educação pública de Santa Catarina —\ncada um com a fonte oficial.\n\nO link tá na descrição e no primeiro comentário.\n\nE se você é professor:\nquantas horas por semana você tem para planejar?\n\nMe diz nos comentários.",
-      pausa:"⟲ A PERGUNTA FINAL GERA COMENTÁRIO EM MASSA" }
-  ],
-  dicas: [
-    { h:"Como ler — três regras", itens:[
-      "<b>Números por extenso de propósito.</b> \"Cinquenta e três\" sai da boca melhor que \"53\". O olho lê o algarismo e a boca trava.",
-      "<b>Fale os números devagar.</b> No bloco 1, o espectador faz a conta na cabeça. Se você acelerar, ele perde — e a conta é o gancho.",
-      "<b>Nunca soe como cobrança.</b> Este vídeo defende o professor. Firmeza, não pena. Ele não quer dó — quer ser lido corretamente."
-    ]},
-    { h:"O que NÃO dizer", alerta:true, itens:[
-      "<b>Nunca</b> \"o professor trabalha pouco\" — é o contrário.",
-      "<b>Nunca</b> dizer que o Brasil descumpre a lei por má-fé. A formulação honesta: <i>\"a jornada praticada deixa menos de um terço para atividade extraclasse, contra o que a lei prevê.\"</i>",
-      "<b>Diga que é autorrelato.</b> TALIS é questionário respondido por professores. É o melhor dado comparável que existe — mas é percepção declarada, não folha de ponto.",
-      "<b>Não diga</b> \"menor carga do mundo\" nem \"2º menor\". O correto é <b>11ª menor carga</b> e <b>4º menor tempo extraclasse</b>, entre 56."
-    ]}
+      p:'PAUSA antes de "quem planeja"' },
+    { h:"Bloco 7 · Chamada",
+      f:"Eu mapeei isso e mais quinhentos e vinte pontos\nda educação pública de Santa Catarina —\ncada um com a fonte oficial.\n\nO link tá na descrição e no primeiro comentário.\n\nE se você é professor:\nquantas horas por semana você tem para planejar?\n\nMe diz nos comentários." }
   ]
 };
 
 ROTEIROS.dia = {
-  titulo: "200 dias de aula, 4 horas por dia",
-  meta: "VÍDEO 2 · cerca de 1min30",
+  nome: "200 dias, 4 horas",
+  meta: "VÍDEO 2 · o dia escolar brasileiro",
   blocos: [
-    { h:"Bloco 1 · Gancho", t:"0–7 SEGUNDOS",
+    { h:"Bloco 1 · Gancho",
       f:"O Brasil tem duzentos dias de aula por ano.\n\nEstá entre os maiores do mundo.\n\nMas o dia de aula brasileiro tem quatro horas.\n\nQuatro." },
-    { h:"Bloco 2 · O ranking", t:"7–18 SEGUNDOS",
+    { h:"Bloco 2 · O ranking",
       f:"Israel tem duzentos e catorze dias.\nO Japão, duzentos e dois.\n\nPortugal tem cento e sessenta e quatro.\nA Grécia, cento e sessenta.\n\nO Brasil está no topo da lista de dias letivos.\nO mundo fica em cento e setenta e sete." },
-    { h:"Bloco 3 · A virada", t:"18–32 SEGUNDOS",
-      f:"Só que dia não é hora.\n\nE aqui a conta vira.\n\nO aluno brasileiro passa quatro horas por dia em aula.\n\nA média mundial é cinco vírgula dois.\n\nUm vírgula dois por dia.\nDuzentos e quarenta horas por ano.",
-      pausa:"⟲ PAUSA — O NÚMERO PRECISA BATER" },
-    { h:"Bloco 4 · A anomalia", t:"32–48 SEGUNDOS",
+    { h:"Bloco 3 · A virada",
+      f:"Só que dia não é hora.\n\nE aqui a conta vira.\n\nO aluno brasileiro passa quatro horas por dia em aula.\n\nA média mundial é cinco vírgula dois.\n\nUm vírgula dois por dia.\nDuzentas e quarenta horas por ano.",
+      p:"PAUSA — o número precisa bater" },
+    { h:"Bloco 4 · A anomalia",
       f:"Nos anos finais do ensino fundamental,\no Brasil é o quinquagésimo primeiro\nentre cinquenta e oito sistemas.\n\nOitocentas horas por ano.\nA mediana é novecentas e setenta e duas.\n\nCento e setenta e duas horas a menos.\nDezoito por cento abaixo." },
-    { h:"Bloco 5 · O que não é", t:"48–62 SEGUNDOS",
+    { h:"Bloco 5 · O que não é",
       f:"Isso não é o professor.\nIsso não é o aluno.\n\nÉ o desenho do dia escolar.\n\nA lei manda oitocentas horas.\nEla não define o que é uma hora." },
-    { h:"Bloco 6 · A saída", t:"62–78 SEGUNDOS",
+    { h:"Bloco 6 · A saída",
       f:"Em mil novecentos e noventa e seis,\na LDB organizou o ensino em duzentos dias.\n\nTrinta anos depois,\na pergunta que ninguém fez é:\n\nquanto vale um dia?" },
-    { h:"Bloco 7 · Chamada", t:"78–90 SEGUNDOS",
+    { h:"Bloco 7 · Chamada",
       f:"Eu mapeei quinhentos e vinte pontos\nda educação pública de Santa Catarina.\n\nCada um com a fonte oficial.\n\nO link tá na descrição.\n\nE me diz: na sua escola,\nquantas horas tem o dia de aula?" }
-  ],
-  dicas: [
-    { h:"Como ler — o essencial", itens:[
-      "<b>\"Quatro.\" é uma frase sozinha.</b> Fale e pare. É o gancho do vídeo inteiro.",
-      "<b>Dia não é hora.</b> Esse é o motor. Se essa virada não ficar clara, o vídeo não funciona.",
-      "<b>Não converta para hora-aula.</b> A LDB não define \"hora\". Comparar hora-aula com hora relógio é erro que destrói a credibilidade."
-    ]},
-    { h:"O que NÃO dizer", alerta:true, itens:[
-      "<b>Nunca</b> diga que o Brasil tem poucos dias letivos — pelo contrário, está no topo.",
-      "<b>Nunca</b> culpe professor, aluno ou família. O problema é o desenho da jornada.",
-      "<b>Diga a fonte:</b> OCDE, dados de dias letivos e horas por ano, anos finais do ensino fundamental."
-    ]}
   ]
 };
 
-/* ------------------------------------------------------------------ */
+/* ---------------------------------------------------------------- */
 
-var ATUAL = "lei";
+function palavras(chave){
+  var r = ROTEIROS[chave], n = 0;
+  for (var i=0;i<r.blocos.length;i++){
+    n += (r.blocos[i].f.match(/[\wÀ-ÿ']+/g) || []).length;
+  }
+  return n;
+}
 
 function esc(s){ return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
   .replace(/>/g,"&gt;"); }
 
 function textoPuro(chave){
-  var r = ROTEIROS[chave], out = [];
-  out.push("=== " + r.titulo.toUpperCase() + " ===");
-  out.push("");
+  var r = ROTEIROS[chave], out = ["=== " + r.nome.toUpperCase() + " ===", ""];
   for (var i=0;i<r.blocos.length;i++){
     var b = r.blocos[i];
-    out.push("=== " + b.h.toUpperCase() + " (" + b.t + ") ===");
-    out.push("");
-    out.push(b.f);
-    if (b.pausa) out.push("", "[" + b.pausa.replace(/^⟲\s*/,"") + "]");
-    if (b.lei)   out.push("", "[" + b.lei + "]");
+    out.push("=== " + b.h.toUpperCase() + " ===", "", b.f);
+    if (b.p) out.push("", "[" + b.p + "]");
     out.push("", "");
   }
   return out.join("\n");
 }
 
-function desenha(chave){
-  ATUAL = chave;
-  var r = ROTEIROS[chave];
-  document.getElementById("titulo").textContent = r.titulo;
-  document.getElementById("meta").textContent = r.meta;
-  document.getElementById("abaA").className = "aba" + (chave==="lei" ? " on" : "");
-  document.getElementById("abaB").className = "aba" + (chave==="dia" ? " on" : "");
-
-  var h = [];
+function montaTexto(chave){
+  var r = ROTEIROS[chave], h = [];
   for (var i=0;i<r.blocos.length;i++){
     var b = r.blocos[i];
-    h.push('<div class="bloco"><h2>' + esc(b.h) + '</h2>');
-    h.push('<div class="tempo">' + esc(b.t) + '</div>');
+    h.push('<div class="bloco"><div class="bh">' + esc(b.h) + '</div>');
     h.push('<div class="fala">' + esc(b.f) + '</div>');
-    if (b.pausa) h.push('<div class="pausa">' + esc(b.pausa) + '</div>');
-    if (b.lei)   h.push('<div class="aviso-lei">' + esc(b.lei) + '</div>');
+    if (b.p) h.push('<div class="pausa">⟲ ' + esc(b.p) + '</div>');
     h.push('</div>');
   }
-  for (var j=0;j<r.dicas.length;j++){
-    var d = r.dicas[j];
-    var bg = d.alerta ? ' style="background:rgba(255,138,115,.1)"' : '';
-    h.push('<div class="dica"' + bg + '><h3>' + esc(d.h) + '</h3><ul>');
-    for (var k=0;k<d.itens.length;k++) h.push('<li>' + d.itens[k] + '</li>');
-    h.push('</ul></div>');
-  }
-  document.getElementById("conteudo").innerHTML = h.join("");
-
-  var puro = document.getElementById("puro");
-  if (puro) { puro.textContent = textoPuro(chave); }
-  document.body.classList.remove("leitura");
-  document.getElementById("btnModo").textContent = "Modo leitura";
+  return h.join("");
 }
 
-function toast(m){
-  var t = document.getElementById("toast");
-  t.textContent = m; t.classList.add("on");
-  setTimeout(function(){ t.classList.remove("on"); }, 1800);
+function pps(){   /* pixels por segundo, a partir das palavras por minuto */
+  if (!alturaTexto) return 40;
+  var totalPalavras = palavras(ATUAL);
+  var duracao = totalPalavras / VEL * 60;      /* segundos */
+  /* A rolagem percorre o mesmo caminho que limiteFim() define: comeca
+     com a primeira linha na guia e termina com a ultima linha na guia. */
+  var percurso = Math.max(1, Math.abs(limiteFim()));
+  return percurso / duracao;
 }
 
-document.getElementById("abaA").onclick = function(){ desenha("lei"); };
-document.getElementById("abaB").onclick = function(){ desenha("dia"); };
+function atualizaInfo(){
+  var p = palavras(ATUAL);
+  var dur = p / VEL * 60;
+  var m = Math.floor(dur/60), s = Math.round(dur%60);
+  document.getElementById("valVel").textContent = VEL + " p/m";
+  document.getElementById("velInfo").innerHTML =
+    "<b>" + p + " palavras</b> · a esta velocidade o roteiro leva <b>" +
+    m + "min" + (s<10?"0":"") + s + "</b>.";
+  document.getElementById("metaTop").textContent = ROTEIROS[ATUAL].meta;
+  document.getElementById("hudVel").textContent = VEL + " p/m";
+  document.getElementById("hudNome").textContent = ROTEIROS[ATUAL].nome;
+  /* os rotulos das abas sao CALCULADOS, nunca escritos a mao --
+     foi assim que os numeros antigos ficaram errados e contraditorios. */
+  document.getElementById("smA").textContent = resumo("lei");
+  document.getElementById("smB").textContent = resumo("dia");
+}
 
-document.getElementById("btnCopiar").onclick = function(){
-  var b = this, txt = textoPuro(ATUAL);
-  function feito(){ b.textContent = "Copiado"; b.classList.add("ok");
-    toast("Agora cole no seu teleprompter");
-    setTimeout(function(){ b.textContent = "Copiar tudo"; b.classList.remove("ok"); }, 2200); }
-  function legado(){
-    var t = document.createElement("textarea");
-    t.value = txt; t.style.position = "fixed"; t.style.opacity = "0";
-    document.body.appendChild(t); t.select();
-    try { document.execCommand("copy"); feito(); }
-    catch(e){ alert("Nao consegui copiar. Use o botao de texto puro."); }
-    document.body.removeChild(t);
+function resumo(chave){
+  var p = palavras(chave), dur = p / 150 * 60;   /* referencia: 150 p/min */
+  var m = Math.floor(dur/60), s = Math.round(dur%60);
+  return m + "min" + (s<10?"0":"") + s + " · " + p + " palavras";
+}
+
+function seleciona(chave){
+  ATUAL = chave;
+  document.getElementById("abaA").className = "aba" + (chave==="lei" ? " on":"");
+  document.getElementById("abaB").className = "aba" + (chave==="dia" ? " on":"");
+  atualizaInfo();
+}
+
+/* medir() NAO mexe na posicao.
+   Antes ela terminava com pos = 0, e como o celular dispara resize quando a
+   barra de endereco aparece, a rolagem voltava ao comeco sozinha -- o texto
+   parecia "travado" e nunca chegava ao fim. Agora medir() so' recalcula as
+   medidas; quem posiciona e' posiciona(). */
+function medir(){
+  var t = document.getElementById("texto");
+  var palco = document.getElementById("palco");
+  var hAntes = alturaTexto;
+  alturaTexto = t.scrollHeight;
+  offsetInicial = palco.clientHeight * 0.38;
+  /* se a altura mudou (giro de tela, fonte), mantem a proporcao lida */
+  if (rodando && hAntes > 0 && alturaTexto !== hAntes){
+    var totAntes = Math.max(1, Math.abs(guia - hAntes));
+    var frac = Math.min(1, Math.max(0, -pos / totAntes));
+    pos = -frac * Math.abs(guia - alturaTexto);
   }
-  if (navigator.clipboard && navigator.clipboard.writeText){
-    navigator.clipboard.writeText(txt).then(feito).catch(legado);
-  } else { legado(); }
+}
+
+function guia(){ return document.getElementById("palco").clientHeight * 0.38; }
+
+/* posiciona o texto com a PRIMEIRA linha exatamente na linha guia.
+   Nao ha deslocamento negativo na partida: o bloco 1 aparece inteiro. */
+function posiciona(){
+  pos = 0;
+  document.getElementById("texto").style.transform = "translate3d(0,0,0)";
+}
+
+/* fim da rolagem: o FIM do texto para na linha guia, ainda legivel.
+   Se o limite fosse -(alturaTexto - offsetInicial), a ultima frase sairia
+   por cima da tela antes de parar -- o leitor perderia exatamente a
+   frase de fechamento. Aqui o texto para com a ultima linha na guia. */
+function limiteFim(){
+  var palco = document.getElementById("palco");
+  var hPalco = palco.clientHeight;
+  /* ponto da guia dentro do palco */
+  var guia = hPalco * 0.38;
+  /* queremos: alturaTexto + pos = guia  =>  pos = guia - alturaTexto */
+  return Math.min(0, guia - alturaTexto);
+}
+
+function aplicar(){
+  document.getElementById("texto").style.transform =
+    "translate3d(0," + pos + "px,0)";
+  if (alturaTexto){
+    var total = Math.max(1, Math.abs(limiteFim()));
+    var pct = Math.min(100, Math.round((-pos) / total * 100));
+    document.getElementById("hudPct").textContent = Math.max(0,pct) + "%";
+  }
+}
+
+function passo(ts){
+  if (!rodando) return;
+  if (pausado){ t0 = ts; raf = requestAnimationFrame(passo); return; }
+  if (!t0) t0 = ts;
+  var dt = (ts - t0) / 1000;
+  t0 = ts;
+  pos -= pps() * dt;
+  var limite = limiteFim();
+  if (limite < 0 && pos <= limite){
+    pos = limite;
+    aplicar();
+    parar();
+    document.getElementById("btnPlay").textContent = "✔ Concluído";
+    document.getElementById("btnPlay").className = "bPlay";
+    document.getElementById("avisoFim").classList.add("on");
+    return;
+  }
+  aplicar();
+  raf = requestAnimationFrame(passo);
+}
+
+function comeca(){
+  rodando = true; pausado = true; t0 = 0;
+  document.body.classList.add("rodando");
+  document.getElementById("avisoFim").classList.remove("on");
+  var t = document.getElementById("texto");
+  t.innerHTML = montaTexto(ATUAL);
+  t.style.transform = "translate3d(0,0,0)";
+  document.getElementById("btnPlay").textContent = "▶ Iniciar";
+  document.getElementById("btnPlay").className = "bPlay pausado";
+  if (raf) cancelAnimationFrame(raf);
+  requestAnimationFrame(function(){
+    medir(); posiciona(); aplicar(); atualizaInfo();
+    raf = requestAnimationFrame(passo);
+  });
+}
+
+function parar(){
+  rodando = false; pausado = true;
+  if (raf) cancelAnimationFrame(raf);
+  raf = null;
+  document.getElementById("btnPlay").textContent = "▶ Iniciar";
+  document.getElementById("btnPlay").classList.add("pausado");
+}
+
+function alterna(){
+  if (!rodando) return;
+  pausado = !pausado;
+  t0 = 0;
+  var b = document.getElementById("btnPlay");
+  b.textContent = pausado ? "▶ Continuar" : "⏸ Pausar";
+  b.className = "bPlay" + (pausado ? " pausado" : "");
+}
+
+function mexeVel(d){
+  VEL = Math.max(60, Math.min(320, VEL + d));
+  try { localStorage.setItem(CHAVE_VEL, String(VEL)); } catch(e){}
+  atualizaInfo();
+}
+
+/* ---------------- ligacoes ---------------- */
+document.getElementById("abaA").onclick = function(){ seleciona("lei"); };
+document.getElementById("abaB").onclick = function(){ seleciona("dia"); };
+
+document.getElementById("range").oninput = function(){
+  /* o slider vai de 60 a 320 p/min */
+  VEL = Math.round(60 + (this.value/100) * 260);
+  try { localStorage.setItem(CHAVE_VEL, String(VEL)); } catch(e){}
+  atualizaInfo();
+  var ps = document.querySelectorAll(".preset[data-p]");
+  for (var i=0;i<ps.length;i++) ps[i].classList.remove("on");
 };
+
+var presets = document.querySelectorAll(".preset[data-p]");
+for (var i=0;i<presets.length;i++){
+  presets[i].onclick = function(){
+    VEL = PRESETS[this.dataset.p === "26" ? "devagar"
+        : this.dataset.p === "38" ? "natural" : "rapido"];
+    document.getElementById("range").value = (VEL-60)/260*100;
+    for (var j=0;j<presets.length;j++) presets[j].classList.remove("on");
+    this.classList.add("on");
+    try { localStorage.setItem(CHAVE_VEL, String(VEL)); } catch(e){}
+    atualizaInfo();
+  };
+}
+
+document.getElementById("btnIniciar").onclick = comeca;
+document.getElementById("btnPlay").onclick = function(e){ e.stopPropagation(); alterna(); };
+document.getElementById("btnSlow").onclick = function(e){ e.stopPropagation(); mexeVel(-10); };
+document.getElementById("btnFast").onclick = function(e){ e.stopPropagation(); mexeVel(+10); };
+document.getElementById("btnSair").onclick = function(e){
+  e.stopPropagation(); parar(); document.body.classList.remove("rodando");
+};
+
+/* toque em qualquer lugar do palco pausa/continua */
+document.getElementById("palco").addEventListener("click", function(e){
+  if (e.target.closest && e.target.closest(".avisoFim")) return;
+  alterna();
+});
 
 document.getElementById("btnTexto").onclick = function(){
   var pre = document.getElementById("puro");
-  if (pre){ pre.remove(); this.textContent = "Ver como texto puro"; return; }
+  if (pre){ pre.remove(); this.textContent = "Ver como texto puro (para copiar)"; return; }
   pre = document.createElement("pre");
   pre.id = "puro"; pre.textContent = textoPuro(ATUAL);
-  pre.style.cssText = "background:#17303F;border-radius:14px;padding:18px;margin:16px 0 0;"+
+  pre.style.cssText = "background:#17303F;border-radius:14px;padding:18px;margin:14px 20px 0;"+
     "font-size:15px;line-height:1.7;color:#C9CFD2;white-space:pre-wrap;"+
     "word-break:break-word;font-family:ui-monospace,Menlo,Consolas,monospace;";
-  document.getElementById("conteudo").appendChild(pre);
+  document.getElementById("preparo").appendChild(pre);
   this.textContent = "Esconder texto puro";
   pre.scrollIntoView({behavior:"smooth",block:"start"});
 };
 
-document.getElementById("btnModo").onclick = function(){
-  var on = document.body.classList.toggle("leitura");
-  var bs = document.querySelectorAll(".bloco");
-  for (var i=0;i<bs.length;i++){
-    bs[i].style.background = on ? "transparent" : "";
-    bs[i].style.borderLeft = on ? "0" : "";
-    bs[i].style.padding = on ? "26px 0" : "";
+/* girar a tela ou a barra de endereco do celular mudar de tamanho:
+   remedir SEM reiniciar. Antes isto chamava medir(), que zerava a posicao --
+   no celular isso acontece varias vezes durante a gravacao e o texto
+   voltava ao comeco. Agora so' reajusta a escala, mantendo o que ja' foi lido. */
+var ultimoL = window.innerWidth, ultimoA = window.innerHeight;
+window.addEventListener("resize", function(){
+  if (window.innerWidth === ultimoL && Math.abs(window.innerHeight - ultimoA) < 90){
+    return;   /* variacao pequena = barra de endereco; ignora */
   }
-  var fs = document.querySelectorAll(".fala");
-  for (var j=0;j<fs.length;j++){ fs[j].style.fontSize = on ? "30px" : ""; }
-  var d = document.querySelectorAll(".dica");
-  for (var k=0;k<d.length;k++){ d[k].style.display = on ? "none" : ""; }
-  this.textContent = on ? "Modo normal" : "Modo leitura";
-  window.scrollTo({top:0});
-};
+  ultimoL = window.innerWidth; ultimoA = window.innerHeight;
+  if (rodando){ medir(); aplicar(); }
+});
 
-desenha("lei");
+/* restaurar velocidade salva */
+try {
+  var v = parseInt(localStorage.getItem(CHAVE_VEL), 10);
+  if (v >= 60 && v <= 320) VEL = v;
+} catch(e){}
+document.getElementById("range").value = (VEL-60)/260*100;
+seleciona("lei");
 </script>
 </body>
 </html>
