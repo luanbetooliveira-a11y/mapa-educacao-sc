@@ -37,7 +37,7 @@
   <button class="iconbtn mobileonly" id="menuBtn" aria-label="Abrir ramificações">☰</button>
   <div class="brand"><div class="mark"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M7 16h6m0 0 6-8m-6 8 6 8m0-16h7m-7 16h7" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="7" cy="16" r="2.5" fill="#76c5df"/><circle cx="19" cy="8" r="2.5" fill="#95dcaa"/><circle cx="19" cy="24" r="2.5" fill="#f9c979"/></svg></div>
   <div><strong>Educação pública de SC</strong><small>Mapa mental da pesquisa · versão 2.0</small></div></div>
-  <span class="chip" id="countPill">521 nós mapeados</span>
+  <span class="chip" id="countPill">520 nós mapeados</span>
   <span class="chip" id="syncPill" title="Estado da sincronização">● Snapshot</span>
   <div class="topActions">
     <button class="btn" id="allBack"><span style="font-size:16px">⌂</span><span class="labelText">Visão geral</span></button>
@@ -84,6 +84,10 @@
 const STORAGE='mapa_educacao_sc_v4_draft';
 const REMOTE_CSV='https://docs.google.com/spreadsheets/d/18wS0JsWPrV5oWL3mM5PKexAkOBNVr6qWVMPFz5lcoew/gviz/tq?tqx=out:csv&sheet=N%C3%B3s';
 const SYNC_EVERY=5*60*1000;
+// Rotulo fixo do contador de nos. O autor pediu 520 e nao 521: e' o numero
+// que esta no card do video 3, ja publicado. O mapa tem 521 nos e todos
+// aparecem -- so' o rotulo nao acompanha, para as duas pecas nao divergirem.
+const ROTULO_NOS=520;
 const ORIGINAL=JSON.parse(document.getElementById('bootdata').textContent);
 const COLORS={R1:'#bf5b6b',R2:'#2d85bf',R3:'#c88b32',R4:'#8863aa',R5:'#2a9991',R6:'#469773',R7:'#aa8840',R8:'#617e97',R9:'#a85f37',R10:'#5068b5',M0:'#193f55'};
 const $=x=>document.getElementById(x), svgNS='http://www.w3.org/2000/svg';
@@ -105,7 +109,7 @@ function listChildren(id){return (children.get(id)||[]).map(key=>byId.get(key)).
 function ancestorPath(id){let a=[],n=byId.get(id);while(n){a.unshift(n);n=byId.get(n.parent)}return a}
 function toast(s){$('toast').textContent=s;$('toast').classList.add('visible');clearTimeout(window._t);window._t=setTimeout(()=>$('toast').classList.remove('visible'),2800)}
 function updateSidebar(){
- let q=$('search').value.trim().toLocaleLowerCase('pt-BR');$('countPill').textContent=`${data.length} nós mapeados`;
+ let q=$('search').value.trim().toLocaleLowerCase('pt-BR');$('countPill').textContent=`${ROTULO_NOS} nós mapeados`;
  $('searchHint').textContent=q?'Resultados encontrados':'Selecione um grande tema';$('branchList').style.display=q?'none':'block';$('results').style.display=q?'block':'none';
  $('branchList').innerHTML='<button class="branch '+(root==='M0'?'active':'')+'" data-key="M0" style="--b:#193f55"><span class="dot"></span><span class="label">Visão geral</span><span class="ord">◉</span></button>'+listChildren('M0').map((n,i)=>`<button class="branch ${root===n.id?'active':''}" data-key="${escapeHtml(n.id)}" style="--b:${color(n.id)}"><span class="dot"></span><span class="label">${escapeHtml(n.title)}</span><span class="ord">${('0'+(i+1)).slice(-2)}</span></button>`).join('');
  $('branchList').querySelectorAll('[data-key]').forEach(e=>e.onclick=()=>{focus(e.dataset.key);closeSidebar()});
